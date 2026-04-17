@@ -2,7 +2,8 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-LINUX_DIR ?= $(firstword $(wildcard /usr/src/linux-headers-*-common) $(wildcard /usr/src/linux-headers-*-amd64) $(wildcard /usr/src/linux-headers-*-arm64))
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+LINUX_DIR ?= $(firstword $(wildcard /usr/src/linux-headers-*-$(DEB_HOST_ARCH)))
 
 DKMS_SRC = debian/ethercat-dkms/usr/src/ethercat-1.5.2
 
