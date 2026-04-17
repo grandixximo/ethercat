@@ -36,6 +36,7 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/err.h>
+#include <linux/version.h>
 
 #include "globals.h"
 #include "master.h"
@@ -112,7 +113,11 @@ int __init ec_init_module(void)
         }
     }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+    class = class_create("EtherCAT");
+#else
     class = class_create(THIS_MODULE, "EtherCAT");
+#endif
     if (IS_ERR(class)) {
         EC_ERR("Failed to create device class.\n");
         ret = PTR_ERR(class);
