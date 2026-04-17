@@ -173,7 +173,7 @@ AC_ARG_ENABLE([8139too],
                 ;;
         esac
     ],
-    [enable8139too=1]
+    [enable8139too=0] # disabled by default (legacy per-kernel patch set)
 )
 
 AM_CONDITIONAL(ENABLE_8139TOO, test "x$enable8139too" = "x1")
