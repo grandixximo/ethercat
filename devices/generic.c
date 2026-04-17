@@ -39,6 +39,9 @@
 #include <linux/version.h>
 #include <linux/if_arp.h> /* ARPHRD_ETHER */
 #include <linux/etherdevice.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+#include <net/net_namespace.h> /* init_net */
+#endif
 
 #include "../globals.h"
 #include "ecdev.h"
@@ -149,7 +152,12 @@ int ec_gen_device_init(
     dev->socket = NULL;
     dev->rx_buf = NULL;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0)
+    dev->netdev = alloc_netdev(sizeof(ec_gen_device_t *), &null,
+            NET_NAME_UNKNOWN, ether_setup);
+#else
     dev->netdev = alloc_netdev(sizeof(ec_gen_device_t *), &null, ether_setup);
+#endif
     if (!dev->netdev) {
         return -ENOMEM;
     }
@@ -207,8 +215,13 @@ int ec_gen_device_create_socket(
         return -ENOMEM;
     }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+    ret = sock_create_kern(&init_net, PF_PACKET, SOCK_RAW,
+            htons(ETH_P_ETHERCAT), &dev->socket);
+#else
     ret = sock_create_kern(PF_PACKET, SOCK_RAW, htons(ETH_P_ETHERCAT),
             &dev->socket);
+#endif
     if (ret) {
         printk(KERN_ERR PFX "Failed to create socket (ret = %i).\n", ret);
         return ret;
@@ -245,7 +258,11 @@ int ec_gen_device_offer(
     int ret = 0;
 
     dev->used_netdev = desc->netdev;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0)
+    dev_addr_set(dev->netdev, desc->dev_addr);
+#else
     memcpy(dev->netdev->dev_addr, desc->dev_addr, ETH_ALEN);
+#endif
 
     dev->ecdev = ecdev_offer(dev->netdev, ec_gen_poll, THIS_MODULE);
     if (dev->ecdev) {
