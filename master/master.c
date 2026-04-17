@@ -44,6 +44,9 @@
 #include <linux/device.h>
 #include <linux/version.h>
 #include <linux/hrtimer.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <uapi/linux/sched/types.h>
+#endif
 #include "globals.h"
 #include "slave.h"
 #include "slave_config.h"
