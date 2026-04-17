@@ -3,7 +3,7 @@ PACKAGE_VERSION="1.5.2"
 AUTOINSTALL="yes"
 CLEAN="rm -f config.h config.status Kbuild Makefile.kbuild"
 
-MAKE[0]="./bootstrap && ./configure --with-linux-dir=${kernel_source_dir} --enable-generic --disable-userlib && make modules"
+MAKE[0]="./bootstrap && ./configure --with-linux-dir=${kernel_source_dir} --enable-generic --disable-userlib && make -C master modules && make -C devices modules"
 BUILT_MODULE_NAME[0]="ec_master"
 BUILT_MODULE_LOCATION[0]="master/"
 DEST_MODULE_LOCATION[0]="/updates/ethercat"
