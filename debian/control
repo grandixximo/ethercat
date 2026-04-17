@@ -1,0 +1,41 @@
+Source: ethercat
+Section: net
+Priority: optional
+Maintainer: Luca Toniolo <toniolo.luca@gmail.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ autoconf,
+ automake,
+ libtool,
+ pkg-config,
+ linux-headers-amd64 [amd64] | linux-headers-arm64 [arm64] | linux-headers-generic
+Standards-Version: 4.6.2
+Homepage: https://etherlab.org/ethercat
+
+Package: ethercat
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base
+Recommends: ethercat-dkms
+Description: IgH EtherCAT Master userspace tools and library
+ Open-source EtherCAT master implementation for Linux.
+ This package provides the ethercat command-line tool,
+ the libethercat shared library, the init script and
+ sysconfig defaults.
+
+Package: ethercat-dev
+Section: libdevel
+Architecture: any
+Depends: ethercat (= ${binary:Version}), ${misc:Depends}
+Description: IgH EtherCAT Master development files
+ Headers, static library and libtool archive for building
+ applications against the IgH EtherCAT master userspace
+ library.
+
+Package: ethercat-dkms
+Architecture: all
+Depends: dkms (>= 2.1), autoconf, automake, libtool, ${misc:Depends}
+Recommends: ethercat (= ${binary:Version})
+Description: IgH EtherCAT Master kernel modules (DKMS)
+ Source for the IgH EtherCAT master and native Ethernet
+ driver kernel modules, built via DKMS against the running
+ kernel. Equivalent to the openSUSE kernel-module package.

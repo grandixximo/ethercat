@@ -1,0 +1,33 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ethercat
+Upstream-Contact: Florian Pose <fp@igh.de>
+Source: https://gitlab.com/etherlab.org/ethercat
+
+Files: *
+Copyright: 2006-2021 Ingenieurgemeinschaft IgH
+License: GPL-2
+
+Files: lib/* include/*
+Copyright: 2006-2021 Ingenieurgemeinschaft IgH
+License: LGPL-2.1+
+
+Files: debian/*
+Copyright: 2026 Luca Toniolo <toniolo.luca@gmail.com>
+License: GPL-2
+
+License: GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as
+ published by the Free Software Foundation.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in /usr/share/common-licenses/GPL-2.
+
+License: LGPL-2.1+
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 2.1 of the
+ License, or (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License can be found in /usr/share/common-licenses/LGPL-2.1.

@@ -1,0 +1,44 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+LINUX_DIR ?= $(firstword $(wildcard /usr/src/linux-headers-*-common) $(wildcard /usr/src/linux-headers-*-amd64) $(wildcard /usr/src/linux-headers-*-arm64))
+
+DKMS_SRC = debian/ethercat-dkms/usr/src/ethercat-1.5.2
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	./bootstrap
+	dh_auto_configure -- \
+		--enable-tty \
+		--enable-generic \
+		--enable-e100 \
+		--with-linux-dir=$(LINUX_DIR) \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var
+
+override_dh_auto_build:
+	dh_auto_build
+
+override_dh_auto_install:
+	dh_auto_install
+	# stage kernel module sources for DKMS
+	mkdir -p $(DKMS_SRC)
+	cp -a \
+	    Kbuild.in Makefile.kbuild configure.ac \
+	    config.h.in bootstrap \
+	    globals.h \
+	    master devices include \
+	    $(DKMS_SRC)/
+	install -D -m 0644 debian/ethercat-dkms.dkms $(DKMS_SRC)/dkms.conf
+	# remove libtool archive from main (moved to -dev only)
+	rm -f debian/tmp/usr/lib/*/libethercat.la || true
+
+override_dh_installinit:
+	dh_installinit --name=ethercat
+
+override_dh_auto_test:
+	:
