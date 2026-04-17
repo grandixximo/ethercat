@@ -18,10 +18,16 @@ override_dh_autoreconf:
 	dh_autoreconf
 
 override_dh_auto_configure:
+	# device-driver patches in 1.5.2 only cover kernels <= 3.4;
+	# trixie runs 6.12, so disable per-version drivers. generic is fine.
 	dh_auto_configure -- \
 		--enable-tty \
 		--enable-generic \
-		--enable-e100 \
+		--disable-8139too \
+		--disable-e100 \
+		--disable-e1000 \
+		--disable-e1000e \
+		--disable-r8169 \
 		--with-linux-dir=$(LINUX_DIR) \
 		--prefix=/usr \
 		--sysconfdir=/etc \
