@@ -9,8 +9,14 @@ DKMS_SRC = debian/ethercat-dkms/usr/src/ethercat-1.5.2
 %:
 	dh $@
 
+override_dh_autoreconf:
+	# automake strict mode needs ChangeLog; upstream ships NEWS.md only
+	[ -e ChangeLog ] || touch ChangeLog
+	# relax automake: drop -Werror, add foreign (skip GNU file reqs), add subdir-objects
+	sed -i 's/AM_INIT_AUTOMAKE(\[-Wall -Werror dist-bzip2\])/AM_INIT_AUTOMAKE([-Wall foreign subdir-objects dist-bzip2])/' configure.ac
+	dh_autoreconf
+
 override_dh_auto_configure:
-	./bootstrap
 	dh_auto_configure -- \
 		--enable-tty \
 		--enable-generic \
