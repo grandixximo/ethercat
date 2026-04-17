@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Luca Toniolo <toniolo.luca@gmail.com>
 Build-Depends:
  debhelper-compat (= 13),
+ dh-sequence-dkms,
  autoconf,
  automake,
  libtool,

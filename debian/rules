@@ -18,6 +18,10 @@ override_dh_autoreconf:
 	dh_autoreconf
 
 override_dh_auto_configure:
+	# snapshot pristine source for DKMS staging BEFORE configure pollutes tree
+	tar --exclude=./debian --exclude=./.git --exclude=./autom4te.cache \
+	    --exclude=./debian-source-snapshot.tar \
+	    -cf debian-source-snapshot.tar .
 	# device-driver patches in 1.5.2 only cover kernels <= 3.4;
 	# trixie runs 6.12, so disable per-version drivers. generic is fine.
 	dh_auto_configure -- \
@@ -38,18 +42,17 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	dh_auto_install
-	# stage kernel module sources for DKMS
+	# stage full pristine source for DKMS so autoreconf+configure succeeds
+	# on the user's box regardless of per-kernel path
 	mkdir -p $(DKMS_SRC)
-	cp -a \
-	    Kbuild.in configure.ac \
-	    bootstrap \
-	    globals.h \
-	    master devices include \
-	    $(DKMS_SRC)/
-	[ -f config.h.in ] && cp -a config.h.in $(DKMS_SRC)/ || true
+	tar -xf debian-source-snapshot.tar -C $(DKMS_SRC)
 	install -D -m 0644 debian/ethercat-dkms.dkms $(DKMS_SRC)/dkms.conf
 	# remove libtool archive from main (moved to -dev only)
 	rm -f debian/tmp/usr/lib/*/libethercat.la || true
+
+override_dh_auto_clean:
+	rm -f debian-source-snapshot.tar
+	dh_auto_clean
 
 override_dh_installinit:
 	dh_installinit --name=ethercat
