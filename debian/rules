@@ -24,9 +24,13 @@ override_dh_auto_configure:
 	    -cf debian-source-snapshot.tar .
 	# device-driver patches in 1.5.2 only cover kernels <= 3.4;
 	# trixie runs 6.12, so disable per-version drivers. generic is fine.
+	# EoE disabled on both userspace and DKMS to keep the ioctl struct
+	# layouts identical; any mismatch makes EC_IOR() cmd numbers diverge
+	# and every ioctl returns ENOTTY.
 	dh_auto_configure -- \
 		--enable-tty \
 		--enable-generic \
+		--disable-eoe \
 		--disable-8139too \
 		--disable-e100 \
 		--disable-e1000 \
