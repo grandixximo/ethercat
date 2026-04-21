@@ -1,4 +1,4 @@
-ethercat (1.6.9+quickop1) trixie; urgency=medium
+ethercat (1.6.9+quickop1~pre1) trixie; urgency=medium
 
   * Quick-OP variant of IgH EtherCAT Master 1.6.9 (stable-1.6).
   * Set EC_WAIT_SDO_DICT=0 to remove the 3s wait after slave PREOP
