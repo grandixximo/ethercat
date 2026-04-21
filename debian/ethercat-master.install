@@ -1,6 +1,5 @@
 usr/bin/ethercat
 usr/sbin/ethercatctl
-usr/lib/*/libethercat.so.*
 etc/init.d/ethercat
 etc/sysconfig/ethercat
 etc/ethercat.conf

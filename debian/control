@@ -13,29 +13,32 @@ Build-Depends:
 Standards-Version: 4.6.2
 Homepage: https://etherlab.org/ethercat
 
-Package: ethercat
+Package: libethercat
+Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: IgH EtherCAT Master userspace library
+ Open-source EtherCAT master implementation for Linux.
+ This package provides the libethercat shared library and
+ development files (headers, static library, pkg-config,
+ and CMake module) used by applications that talk to the
+ running EtherCAT master.
+
+Package: ethercat-master
+Architecture: any
+Depends: libethercat (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, lsb-base
 Recommends: ethercat-dkms
-Description: IgH EtherCAT Master userspace tools and library
+Description: IgH EtherCAT Master userspace tools and service
  Open-source EtherCAT master implementation for Linux.
  This package provides the ethercat command-line tool,
- the libethercat shared library, the init script and
- sysconfig defaults.
-
-Package: ethercat-dev
-Section: libdevel
-Architecture: any
-Depends: ethercat (= ${binary:Version}), ${misc:Depends}
-Description: IgH EtherCAT Master development files
- Headers, static library and libtool archive for building
- applications against the IgH EtherCAT master userspace
- library.
+ ethercatctl, the init script, sysconfig defaults and
+ the systemd service unit.
 
 Package: ethercat-dkms
 Architecture: all
 Depends: dkms (>= 2.1), autoconf, automake, libtool, ${misc:Depends}
-Recommends: ethercat (= ${binary:Version})
+Recommends: ethercat-master
 Description: IgH EtherCAT Master kernel modules (DKMS)
  Source for the IgH EtherCAT master and native Ethernet
  driver kernel modules, built via DKMS against the running

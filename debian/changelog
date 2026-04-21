@@ -1,3 +1,11 @@
+ethercat (1.6.9+quickop1~pre2) trixie; urgency=medium
+
+  * Rework package split to mirror the openSUSE release layout:
+    libethercat (runtime + dev files), ethercat-master (tools and
+    service), ethercat-dkms (kernel module source).
+
+ -- Luca Toniolo <toniolo.luca@gmail.com>  Tue, 21 Apr 2026 00:00:00 +0000
+
 ethercat (1.6.9+quickop1~pre1) trixie; urgency=medium
 
   * Quick-OP variant of IgH EtherCAT Master 1.6.9 (stable-1.6).
