@@ -1,0 +1,13 @@
+ethercat (1.6.9+quickop1) trixie; urgency=medium
+
+  * Quick-OP variant of IgH EtherCAT Master 1.6.9 (stable-1.6).
+  * Set EC_WAIT_SDO_DICT=0 to remove the 3s wait after slave PREOP
+    before SDO dictionary fetch, yielding markedly faster PREOP -> OP
+    transitions. Credit: Synapticon fork of IgH EtherCAT Master
+    (https://github.com/synapticon/Etherlab_EtherCAT_Master),
+    commit 22b92ee ("Reduce waiting period for SDOs").
+  * Debian packaging for Debian trixie; layout mirrors the openSUSE
+    RPM spec. GitHub Actions CI builds .deb artifacts and publishes
+    a GitHub release on tag.
+
+ -- Luca Toniolo <toniolo.luca@gmail.com>  Tue, 21 Apr 2026 00:00:00 +0000

@@ -1,0 +1,53 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+LINUX_DIR ?= $(firstword $(wildcard /usr/src/linux-headers-*-$(DEB_HOST_ARCH)))
+
+DKMS_SRC = debian/tmp/usr/src/ethercat-1.6.9
+
+%:
+	dh $@
+
+override_dh_autoreconf:
+	[ -e ChangeLog ] || touch ChangeLog
+	dh_autoreconf
+
+override_dh_auto_configure:
+	tar --exclude=./debian --exclude=./.git --exclude=./autom4te.cache \
+	    --exclude=./debian-source-snapshot.tar \
+	    -cf debian-source-snapshot.tar .
+	dh_auto_configure -- \
+		--enable-tty \
+		--enable-generic \
+		--disable-eoe \
+		--disable-8139too \
+		--disable-e100 \
+		--disable-e1000 \
+		--disable-e1000e \
+		--disable-r8169 \
+		--with-linux-dir=$(LINUX_DIR) \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var
+
+override_dh_auto_build:
+	dh_auto_build
+
+override_dh_auto_install:
+	dh_auto_install
+	mkdir -p $(DKMS_SRC)
+	tar -xf debian-source-snapshot.tar -C $(DKMS_SRC)
+	install -D -m 0644 debian/ethercat-dkms.dkms $(DKMS_SRC)/dkms.conf
+	rm -f debian/tmp/usr/lib/*/libethercat.la || true
+
+override_dh_auto_clean:
+	rm -f debian-source-snapshot.tar
+	dh_auto_clean
+
+override_dh_installinit:
+	dh_installinit --name=ethercat
+
+override_dh_auto_test:
+	:

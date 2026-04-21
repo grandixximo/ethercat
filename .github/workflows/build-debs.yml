@@ -1,0 +1,79 @@
+name: Build Debian packages
+
+on:
+  push:
+    branches: [ stable-1.6, main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ stable-1.6, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: deb (trixie, ${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ amd64 ]
+    container:
+      image: debian:trixie
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Install build deps
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential devscripts debhelper dh-dkms \
+            autoconf automake libtool pkg-config \
+            linux-headers-${{ matrix.arch }} \
+            ca-certificates git
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mark workspace safe
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Build packages
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p debs
+          mv ../*.deb ../*.buildinfo ../*.changes debs/ 2>/dev/null || true
+          ls -la debs/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ethercat-debs-trixie-${{ matrix.arch }}
+          path: debs/
+          retention-days: 30
+
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Flatten
+        run: |
+          mkdir -p release
+          find artifacts -type f \( -name '*.deb' -o -name '*.changes' -o -name '*.buildinfo' \) -exec cp {} release/ \;
+          ls -la release/
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
