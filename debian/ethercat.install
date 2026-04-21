@@ -4,4 +4,4 @@ usr/lib/*/libethercat.so.*
 etc/init.d/ethercat
 etc/sysconfig/ethercat
 etc/ethercat.conf
-usr/lib/*/systemd/system/ethercat.service
+usr/lib/systemd/system/ethercat.service

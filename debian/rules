@@ -21,6 +21,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- \
 		--enable-tty \
 		--enable-generic \
+		--with-systemdsystemunitdir=/usr/lib/systemd/system \
 		--disable-eoe \
 		--disable-8139too \
 		--disable-e100 \
