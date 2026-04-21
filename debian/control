@@ -27,7 +27,7 @@ Description: IgH EtherCAT Master userspace library
 
 Package: ethercat-master
 Architecture: any
-Depends: libethercat (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, lsb-base
+Depends: libethercat (>= ${source:Upstream-Version}), ${shlibs:Depends}, ${misc:Depends}, lsb-base
 Recommends: ethercat-dkms
 Description: IgH EtherCAT Master userspace tools and service
  Open-source EtherCAT master implementation for Linux.

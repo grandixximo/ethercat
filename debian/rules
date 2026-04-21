@@ -17,9 +17,12 @@ override_dh_autoreconf:
 override_dh_auto_configure:
 	# Upstream leaves $(LINUX_SYMVERS) unset in devices/Kbuild.in, which
 	# collapses KBUILD_EXTRA_SYMBOLS to the build directory itself, and
-	# modpost then fails with "Is a directory". Hard-wire Module.symvers.
+	# modpost then fails with "Is a directory". Hard-wire Module.symvers,
+	# and drop the bogus top-level path that never exists.
 	find devices examples -name Kbuild.in -exec \
 	    sed -i 's|\$$(LINUX_SYMVERS)|Module.symvers|g' {} +
+	find devices examples -name Kbuild.in -exec \
+	    sed -i '\|@abs_top_builddir@/Module\.symvers \\$$|d' {} +
 	tar --exclude=./debian --exclude=./.git --exclude=./autom4te.cache \
 	    --exclude=./debian-source-snapshot.tar \
 	    -cf debian-source-snapshot.tar .
