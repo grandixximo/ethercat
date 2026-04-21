@@ -2,10 +2,9 @@ name: Build Debian packages
 
 on:
   push:
-    branches: [ stable-1.6, main ]
+    branches: [ '**' ]
     tags: [ 'v*' ]
   pull_request:
-    branches: [ stable-1.6, main ]
   workflow_dispatch:
 
 permissions:
