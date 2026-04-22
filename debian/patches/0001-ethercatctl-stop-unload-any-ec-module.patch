@@ -1,0 +1,42 @@
+Description: ethercatctl stop: unload every loaded ec_* module before ec_master
+ The upstream stop logic walks DEVICE_MODULES from /etc/ethercat.conf and
+ unloads `ec_<driver>` in that order, then `ec_master`. If a user loads an
+ EtherCAT device driver (for example ec_generic) outside of the config,
+ or edits DEVICE_MODULES between start and stop, ec_master is still
+ referenced and rmmod fails with "ec_master is in use by: ec_generic".
+ .
+ Scan lsmod for any loaded ec_* module besides ec_master first, unload it,
+ then finally unload ec_master.
+Author: Luca Toniolo <toniolo.luca@gmail.com>
+Forwarded: not-needed
+
+--- a/script/ethercatctl.in
++++ b/script/ethercatctl.in
+@@ -163,16 +163,18 @@
+ #------------------------------------------------------------------------------
+
+ stop)
+-    # unload EtherCAT device modules
+-    for MODULE in ${DEVICE_MODULES} master; do
+-        ECMODULE=ec_${MODULE}
+-        if ! ${LSMOD} | grep -q "^${ECMODULE} "; then
+-            continue # ec_* module not loaded
++    # Unload every loaded ec_* module besides ec_master first, then
++    # ec_master last. Robust against drift between DEVICE_MODULES at
++    # start time and at stop time.
++    for MOD in $(${LSMOD} | awk '/^ec_/ && $1 != "ec_master" {print $1}'); do
++        ${RMMOD} "${MOD}" 2>/dev/null || true
++    done
++
++    if ${LSMOD} | grep -q "^ec_master "; then
++        if ! ${RMMOD} ec_master; then
++            exit 1
+         fi
+-        if ! ${RMMOD} "${ECMODULE}"; then
+-            exit 1
+-        fi;
+-    done
++    fi
+
+     sleep 1
+

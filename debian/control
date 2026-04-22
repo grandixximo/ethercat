@@ -8,8 +8,7 @@ Build-Depends:
  autoconf,
  automake,
  libtool,
- pkg-config,
- linux-headers-amd64 [amd64] | linux-headers-arm64 [arm64] | linux-headers-generic
+ pkg-config
 Standards-Version: 4.6.2
 Homepage: https://etherlab.org/ethercat
 

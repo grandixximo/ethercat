@@ -2,9 +2,6 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-LINUX_DIR ?= $(firstword $(wildcard /usr/src/linux-headers-*-$(DEB_HOST_ARCH)))
-
 DKMS_SRC = debian/tmp/usr/src/ethercat-1.6.9
 
 %:
@@ -15,6 +12,11 @@ override_dh_autoreconf:
 	dh_autoreconf
 
 override_dh_auto_configure:
+	# Apply packaging patches to the upstream tree before snapshotting
+	# (so DKMS on the user's box sees the fixed sources too).
+	for p in $$(ls -1 debian/patches/*.patch 2>/dev/null); do \
+	    patch -p1 --forward --no-backup-if-mismatch < $$p || exit 1; \
+	done
 	# Upstream leaves $(LINUX_SYMVERS) unset in devices/Kbuild.in, which
 	# collapses KBUILD_EXTRA_SYMBOLS to the build directory itself, and
 	# modpost then fails with "Is a directory". Hard-wire Module.symvers,
@@ -28,15 +30,9 @@ override_dh_auto_configure:
 	    -cf debian-source-snapshot.tar .
 	dh_auto_configure -- \
 		--enable-tty \
-		--enable-generic \
-		--with-systemdsystemunitdir=/usr/lib/systemd/system \
+		--disable-kernel \
 		--disable-eoe \
-		--disable-8139too \
-		--disable-e100 \
-		--disable-e1000 \
-		--disable-e1000e \
-		--disable-r8169 \
-		--with-linux-dir=$(LINUX_DIR) \
+		--with-systemdsystemunitdir=/usr/lib/systemd/system \
 		--prefix=/usr \
 		--sysconfdir=/etc \
 		--localstatedir=/var
