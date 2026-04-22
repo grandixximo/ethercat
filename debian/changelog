@@ -1,3 +1,17 @@
+ethercat (1.6.9+quickop1~pre6) trixie; urgency=medium
+
+  * master: define EC_SKIP_SDO_DICT=1 and gate the master-FSM
+    "fetch SDO dictionary" block behind it. The dictionary readout
+    runs once per CoE slave as soon as the slave hits PREOP and
+    monopolises the master FSM (and its fsm_datagram) for the whole
+    transfer, which starves slave configuration and delays the
+    PREOP->SAFEOP->OP path. Introspection tools (ethercat sdos) are
+    the only user of this data and can request it explicitly, so
+    skipping the automatic fetch is safe for I/O. This matches the
+    Synapticon sncn13 build that reaches OP in ~5 s.
+
+ -- Luca Toniolo <toniolo.luca@gmail.com>  Wed, 22 Apr 2026 00:00:00 +0000
+
 ethercat (1.6.9+quickop1~pre5) trixie; urgency=medium
 
   * dkms: build native Ethernet drivers alongside ec_master and

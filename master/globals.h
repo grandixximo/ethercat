@@ -50,6 +50,14 @@
     after slave entered PREOP state. */
 #define EC_WAIT_SDO_DICT 0
 
+/** Skip the automatic SDO dictionary readout that the master FSM issues
+    for every CoE-capable slave once it reaches PREOP. The dictionary is
+    only used by introspection tools and does not affect I/O; skipping it
+    frees up master-FSM time during start-up and lets slaves reach OP
+    faster. Upstream default is to fetch; the Synapticon (sncn13) fork
+    enables this to accelerate OP transitions. */
+#define EC_SKIP_SDO_DICT 1
+
 /** Minimum size of a buffer used with ec_state_string(). */
 #define EC_STATE_STRING_SIZE 32
 
