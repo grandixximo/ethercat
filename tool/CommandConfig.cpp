@@ -63,6 +63,21 @@ static string pdoModeString(ec_pdo_mode_t mode)
 
 /****************************************************************************/
 
+/** Returns a JSON value string for a PDO handling mode.
+ */
+static string pdoModeJsonString(ec_pdo_mode_t mode)
+{
+    switch (mode) {
+        case EC_PDO_MODE_FIXED: return "fixed";
+        case EC_PDO_MODE_WRITE: return "write";
+        case EC_PDO_MODE_READ_WRITE: return "read_write";
+        case EC_PDO_MODE_WRITE_IF_DIFFERENT: return "write_if_different";
+        default: return "invalid";
+    }
+}
+
+/****************************************************************************/
+
 CommandConfig::CommandConfig():
     Command("config", "Show slave configurations.")
 {
@@ -576,9 +591,10 @@ void CommandConfig::showConfigsJson(
         }
         cout << "}," << endl
             << "          \"pdo_assignment_mode\": \""
-            << pdoModeString(configIter->pdo_assign_mode) << "\"," << endl
+            << pdoModeJsonString(configIter->pdo_assign_mode) << "\","
+            << endl
             << "          \"pdo_configuration_mode\": \""
-            << pdoModeString(configIter->pdo_config_mode) << "\","
+            << pdoModeJsonString(configIter->pdo_config_mode) << "\","
             << endl
             << "          \"sync_managers\": [";
 
@@ -604,8 +620,8 @@ void CommandConfig::showConfigsJson(
                     << "              \"index\": " << j << ","
                     << endl
                     << "              \"direction\": \""
-                    << (configIter->syncs[j].dir == EC_DIR_INPUT
-                            ? "input" : "output") << "\"," << endl
+                    << directionString(configIter->syncs[j].dir) << "\","
+                    << endl
                     << "              \"watchdog_mode\": \"";
                 switch (configIter->syncs[j].watchdog_mode) {
                     case EC_WD_DEFAULT: cout << "default"; break;

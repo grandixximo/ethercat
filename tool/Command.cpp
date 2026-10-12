@@ -544,6 +544,17 @@ string Command::alStateBaseString(uint8_t state)
 
 /****************************************************************************/
 
+string Command::directionString(ec_direction_t dir)
+{
+    switch (dir) {
+        case EC_DIR_OUTPUT: return "output";
+        case EC_DIR_INPUT: return "input";
+        default: return "invalid";
+    }
+}
+
+/****************************************************************************/
+
 string Command::jsonEscape(const string &in)
 {
     stringstream out;

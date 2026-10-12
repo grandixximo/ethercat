@@ -380,6 +380,8 @@ void CommandPdos::listSlavePdosJson(
         }
         firstSync = false;
 
+        // Write access from the EtherCAT side (control register bit 2)
+        // means outputs.
         cout << "        {" << endl
             << "          \"index\": " << dec << i << "," << endl
             << "          \"physical_start_address\": "
@@ -390,8 +392,9 @@ void CommandPdos::listSlavePdosJson(
             << (unsigned int) sync.control_register << "," << endl
             << "          \"enable\": " << (sync.enable ? "true" : "false")
             << "," << endl
-            << "          \"pdo_type\": \""
-            << (sync.control_register & 0x04 ? "rx" : "tx") << "\"," << endl
+            << "          \"direction\": \""
+            << (sync.control_register & 0x04 ? "output" : "input") << "\","
+            << endl
             << "          \"pdos\": [" << endl;
 
         for (j = 0; j < sync.pdo_count; j++) {

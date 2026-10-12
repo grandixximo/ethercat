@@ -220,8 +220,7 @@ void CommandData::outputDomainDataJson(
             << "              \"sync_manager\": "
             << (unsigned int) fmmu.sync_index << "," << endl
             << "              \"direction\": \""
-            << (fmmu.dir == EC_DIR_INPUT ? "input" : "output") << "\","
-            << endl
+            << directionString(fmmu.dir) << "\"," << endl
             << "              \"logical_address\": "
             << fmmu.logical_address << "," << endl
             << "              \"size\": " << fmmu.data_size << "," << endl
