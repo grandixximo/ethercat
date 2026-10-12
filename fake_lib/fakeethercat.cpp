@@ -552,6 +552,14 @@ int ecrt_master_reset(ec_master_t *master /**< EtherCAT master. */
     return 0;
 }
 
+int ecrt_master_sii_caching(
+        ec_master_t *master,          /**< EtherCAT master. */
+        ec_sii_caching_fields_t fields /**< Fields to use for cache lookup. */
+)
+{
+    return 0;
+}
+
 static int mkpath(const std::string &file_path)
 {
     if (file_path.empty()) {
