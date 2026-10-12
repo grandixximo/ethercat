@@ -587,15 +587,17 @@ string Command::jsonEscape(const string &in)
 /** Outputs the opening of a JSON document.
  *
  * The document is an object containing the format version, the EtherCAT
- * master version and a list with the given key. The list elements have to
- * be indented by four spaces.
+ * master version and revision and a list with the given key. The list
+ * elements have to be indented by four spaces.
  */
 void Command::jsonBegin(const string &listKey)
 {
     cout << "{" << endl
         << "  \"json_version\": " << JsonFormatVersion << "," << endl
-        << "  \"ethercat_main_device_version\": \""
-        << jsonEscape(EC_MASTER_VERSION) << "\"," << endl
+        << "  \"ethercat_version\": \"" << jsonEscape(VERSION) << "\","
+        << endl
+        << "  \"ethercat_revision\": \"" << jsonEscape(EC_STR(REV)) << "\","
+        << endl
         << "  \"" << listKey << "\": [" << endl;
 }
 

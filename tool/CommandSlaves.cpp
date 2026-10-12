@@ -514,7 +514,7 @@ void CommandSlaves::showSlavesJson(
             << "          \"position\": " << si->position << ","
             << endl
             << "          \"alias\": " << si->alias << "," << endl
-            << "          \"device\": \""
+            << "          \"device_role\": \""
             << (si->device_index ? "backup" : "main") << "\"," << endl
             << "          \"state\": \""
             << alStateBaseString(si->al_state) << "\"," << endl
@@ -687,8 +687,6 @@ void CommandSlaves::showSlavesJson(
                 << "            \"image\": \"" << jsonEscape(si->image)
                 << "\"," << endl
                 << "            \"order\": \"" << jsonEscape(si->order)
-                << "\"," << endl
-                << "            \"device_name\": \"" << jsonEscape(si->name)
                 << "\"";
 
             if (si->mailbox_protocols & EC_MBOX_COE) {

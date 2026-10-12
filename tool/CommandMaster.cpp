@@ -439,7 +439,7 @@ void CommandMaster::showMasterJson(
             << "          \"attached\": "
             << (data.devices[dev_idx].attached ? "true" : "false")
             << "," << endl
-            << "          \"link\": "
+            << "          \"link_up\": "
             << (data.devices[dev_idx].link_state ? "true" : "false")
             << "," << endl
             << "          \"tx_frames\": " << data.devices[dev_idx].tx_count
