@@ -14,10 +14,17 @@ variables:
 
 pre-commit:
     stage: lint
-    image: python:3.12
+    image: registry.gitlab.com/etherlab.org/build-container-factory/pre-commit:latest
 
-    before_script:
-      - pip install pre-commit
+    variables:
+      PRE_COMMIT_HOME: "${CI_PROJECT_DIR}/.cache/pre-commit"
+
+    cache:
+      key:
+        files:
+          - .pre-commit-config.yaml
+      paths:
+        - .cache/pre-commit
 
     script:
       - |
@@ -53,6 +60,20 @@ kernel 3.4:
     script:
         - ./bootstrap
         - ./configure --enable-8139too --enable-e100 --enable-e1000 --enable-e1000e --enable-r8169 --with-linux-dir=/usr/src/linux-obj/x86_64/0304rt
+        - make -j8 all modules
+
+kernel 6.18:
+    stage: build
+    image: registry.gitlab.com/etherlab.org/build-container-factory/ethercat-kernels:k6.18-rt
+    variables:
+        # The kernel tree in this image is only prepared with
+        # 'make prepare'/'make modules_prepare', not fully built, so
+        # Module.symvers is incomplete and modpost would otherwise fail
+        # with unresolved-symbol errors on every core kernel symbol.
+        KBUILD_MODPOST_WARN: "1"
+    script:
+        - ./bootstrap
+        - ./configure --enable-macb --enable-ccat --with-linux-dir=/usr/src/linux-6.18.45-rt
         - make -j8 all modules
 
 xenomai3:
@@ -163,7 +184,7 @@ pdf:
 update docs server:
     stage: deploy
     rules:
-        - if: ($CI_COMMIT_BRANCH == "stable-1.6" || $CI_COMMIT_TAG) && $CI_PROJECT_NAMESPACE == "etherlab.org"
+        - if: ($CI_COMMIT_BRANCH == "stable-1.7" || $CI_COMMIT_TAG) && $CI_PROJECT_NAMESPACE == "etherlab.org"
     trigger: etherlab.org/docs
 
 upload:
@@ -203,4 +224,4 @@ workflow:
     rules:
         - if: $CI_MERGE_REQUEST_IID
         - if: $CI_COMMIT_TAG
-        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "stable-1.6"
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "stable-1.7"
