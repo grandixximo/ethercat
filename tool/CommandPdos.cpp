@@ -128,7 +128,7 @@ void CommandPdos::execute(const StringVector &args)
 
         masterIndices = getMasterIndices();
 
-        cout << "[" << endl;
+        jsonBegin("sub_devices");
         MasterIndexList::const_iterator mi;
         for (mi = masterIndices.begin();
                 mi != masterIndices.end(); mi++) {
@@ -144,7 +144,7 @@ void CommandPdos::execute(const StringVector &args)
                 listSlavePdosJson(m, *si);
             }
         }
-        cout << endl << "]" << endl;
+        jsonEnd();
 
         return;
     }
@@ -365,10 +365,10 @@ void CommandPdos::listSlavePdosJson(
     unsigned int i, j, k;
     bool firstSync = true;
 
-    cout << "  {" << endl
-        << "    \"master\": " << dec << m.getIndex() << "," << endl
-        << "    \"slave\": " << slave.position << "," << endl
-        << "    \"sync_managers\": [" << endl;
+    cout << "    {" << endl
+        << "      \"main_device\": " << dec << m.getIndex() << "," << endl
+        << "      \"sub_device\": " << slave.position << "," << endl
+        << "      \"sync_managers\": [" << endl;
 
     for (i = 0; i < slave.sync_count; i++) {
         bool firstPdo = true;
@@ -380,19 +380,19 @@ void CommandPdos::listSlavePdosJson(
         }
         firstSync = false;
 
-        cout << "      {" << endl
-            << "        \"index\": " << dec << i << "," << endl
-            << "        \"physical_start_address\": "
+        cout << "        {" << endl
+            << "          \"index\": " << dec << i << "," << endl
+            << "          \"physical_start_address\": "
             << sync.physical_start_address << "," << endl
-            << "        \"default_size\": " << sync.default_size
+            << "          \"default_size\": " << sync.default_size
             << "," << endl
-            << "        \"control_register\": "
+            << "          \"control_register\": "
             << (unsigned int) sync.control_register << "," << endl
-            << "        \"enable\": " << (sync.enable ? "true" : "false")
+            << "          \"enable\": " << (sync.enable ? "true" : "false")
             << "," << endl
-            << "        \"pdo_type\": \""
+            << "          \"pdo_type\": \""
             << (sync.control_register & 0x04 ? "rx" : "tx") << "\"," << endl
-            << "        \"pdos\": [" << endl;
+            << "          \"pdos\": [" << endl;
 
         for (j = 0; j < sync.pdo_count; j++) {
             m.getPdo(&pdo, slave.position, i, j);
@@ -402,12 +402,12 @@ void CommandPdos::listSlavePdosJson(
             }
             firstPdo = false;
 
-            cout << "          {" << endl
-                << "            \"index\": " << pdo.index << "," << endl
-                << "            \"name\": \""
+            cout << "            {" << endl
+                << "              \"index\": " << pdo.index << "," << endl
+                << "              \"name\": \""
                 << jsonEscape(reinterpret_cast<const char *>(pdo.name))
                 << "\"," << endl
-                << "            \"entries\": [" << endl;
+                << "              \"entries\": [" << endl;
 
             {
                 bool firstEntry = true;
@@ -420,37 +420,37 @@ void CommandPdos::listSlavePdosJson(
                     }
                     firstEntry = false;
 
-                    cout << "              {" << endl
-                        << "                \"index\": " << entry.index
+                    cout << "                {" << endl
+                        << "                  \"index\": " << entry.index
                         << "," << endl
-                        << "                \"subindex\": "
+                        << "                  \"subindex\": "
                         << (unsigned int) entry.subindex << "," << endl
-                        << "                \"bit_length\": "
+                        << "                  \"bit_length\": "
                         << dec << (unsigned int) entry.bit_length << ","
                         << endl
-                        << "                \"name\": \""
+                        << "                  \"name\": \""
                         << jsonEscape(
                                 reinterpret_cast<const char *>(entry.name))
                         << "\"" << endl
-                        << "              }";
+                        << "                }";
                 }
 
                 cout << endl
-                    << "            ]";
+                    << "              ]";
             }
 
             cout << endl
-                << "          }";
+                << "            }";
         }
 
         cout << endl
-            << "        ]" << endl
-            << "      }";
+            << "          ]" << endl
+            << "        }";
     }
 
     cout << endl
-        << "    ]" << endl
-        << "  }";
+        << "      ]" << endl
+        << "    }";
 }
 
 /****************************************************************************/

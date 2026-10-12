@@ -110,7 +110,7 @@ void CommandSdos::execute(const StringVector &args)
     multiMaster = masterIndices.size() > 1;
 
     if (getJson()) {
-        cout << "[" << endl;
+        jsonBegin("sub_devices");
     }
 
     MasterIndexList::const_iterator mi;
@@ -135,7 +135,7 @@ void CommandSdos::execute(const StringVector &args)
     }
 
     if (getJson()) {
-        cout << endl << "]" << endl;
+        jsonEnd();
     }
 }
 
@@ -213,10 +213,10 @@ void CommandSdos::listSlaveSdosJson(
     const DataType *d;
     bool firstSdo = true;
 
-    cout << "  {" << endl
-        << "    \"master\": " << dec << m.getIndex() << "," << endl
-        << "    \"slave\": " << slave.position << "," << endl
-        << "    \"sdos\": [" << endl;
+    cout << "    {" << endl
+        << "      \"main_device\": " << dec << m.getIndex() << "," << endl
+        << "      \"sub_device\": " << slave.position << "," << endl
+        << "      \"sdos\": [" << endl;
 
     for (i = 0; i < slave.sdo_count; i++) {
         bool firstEntry = true;
@@ -228,13 +228,13 @@ void CommandSdos::listSlaveSdosJson(
         }
         firstSdo = false;
 
-        cout << "      {" << endl
-            << "        \"index\": " << dec << sdo.sdo_index << ","
+        cout << "        {" << endl
+            << "          \"index\": " << dec << sdo.sdo_index << ","
             << endl
-            << "        \"name\": \""
+            << "          \"name\": \""
             << jsonEscape(reinterpret_cast<const char *>(sdo.name))
             << "\"," << endl
-            << "        \"entries\": [" << endl;
+            << "          \"entries\": [" << endl;
 
         for (j = 0; j <= sdo.max_subindex; j++) {
             try {
@@ -248,55 +248,55 @@ void CommandSdos::listSlaveSdosJson(
             }
             firstEntry = false;
 
-            cout << "          {" << endl
-                << "            \"subindex\": "
+            cout << "            {" << endl
+                << "              \"subindex\": "
                 << (unsigned int) entry.sdo_entry_subindex << ","
                 << endl
-                << "            \"access\": {" << endl
-                << "              \"preop\": {\"read\": "
+                << "              \"access\": {" << endl
+                << "                \"preop\": {\"read\": "
                 << (entry.read_access[EC_SDO_ENTRY_ACCESS_PREOP]
                         ? "true" : "false") << ", \"write\": "
                 << (entry.write_access[EC_SDO_ENTRY_ACCESS_PREOP]
                         ? "true" : "false") << "}," << endl
-                << "              \"safeop\": {\"read\": "
+                << "                \"safeop\": {\"read\": "
                 << (entry.read_access[EC_SDO_ENTRY_ACCESS_SAFEOP]
                         ? "true" : "false") << ", \"write\": "
                 << (entry.write_access[EC_SDO_ENTRY_ACCESS_SAFEOP]
                         ? "true" : "false") << "}," << endl
-                << "              \"op\": {\"read\": "
+                << "                \"op\": {\"read\": "
                 << (entry.read_access[EC_SDO_ENTRY_ACCESS_OP]
                         ? "true" : "false") << ", \"write\": "
                 << (entry.write_access[EC_SDO_ENTRY_ACCESS_OP]
                         ? "true" : "false") << "}" << endl
-                << "            }," << endl
-                << "            \"data_type\": ";
+                << "              }," << endl
+                << "              \"data_type\": ";
             if ((d = findDataType(entry.data_type))) {
                 cout << "\"" << d->name << "\"";
             } else {
                 cout << "null";
             }
             cout << "," << endl
-                << "            \"data_type_code\": "
+                << "              \"data_type_code\": "
                 << dec << entry.data_type << "," << endl
-                << "            \"bit_length\": "
+                << "              \"bit_length\": "
                 << dec << entry.bit_length << "," << endl
-                << "            \"description\": \""
+                << "              \"description\": \""
                 << jsonEscape(reinterpret_cast<const char *>(
                             entry.description))
                 << "\"" << endl
-                << "          }";
+                << "            }";
         }
 
         cout << endl
-            << "        ]";
+            << "          ]";
 
         cout << endl
-            << "      }";
+            << "        }";
     }
 
     cout << endl
-        << "    ]" << endl
-        << "  }";
+        << "      ]" << endl
+        << "    }";
 }
 
 /****************************************************************************/

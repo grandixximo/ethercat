@@ -115,7 +115,7 @@ void CommandDomains::execute(const StringVector &args)
     doIndent = masterIndices.size() > 1;
 
     if (getJson()) {
-        cout << "[" << endl;
+        jsonBegin("main_devices");
     }
 
     MasterIndexList::const_iterator mi;
@@ -135,9 +135,9 @@ void CommandDomains::execute(const StringVector &args)
             }
             firstMaster = false;
 
-            cout << "  {" << endl
-                << "    \"master\": " << dec << *mi << "," << endl
-                << "    \"domains\": [" << endl;
+            cout << "    {" << endl
+                << "      \"main_device\": " << dec << *mi << "," << endl
+                << "      \"domains\": [" << endl;
 
             for (di = domains.begin(); di != domains.end(); di++) {
                 if (!firstDomain) {
@@ -148,8 +148,8 @@ void CommandDomains::execute(const StringVector &args)
             }
 
             cout << endl
-                << "    ]" << endl
-                << "  }";
+                << "      ]" << endl
+                << "    }";
             continue;
         }
 
@@ -163,7 +163,7 @@ void CommandDomains::execute(const StringVector &args)
     }
 
     if (getJson()) {
-        cout << endl << "]" << endl;
+        jsonEnd();
     }
 }
 
@@ -270,15 +270,15 @@ void CommandDomains::showDomainJson(
         wc_sum += domain.working_counter[dev_idx];
     }
 
-    cout << "      {" << endl
-        << "        \"index\": " << domain.index << "," << endl
-        << "        \"logical_base_address\": "
+    cout << "        {" << endl
+        << "          \"index\": " << domain.index << "," << endl
+        << "          \"logical_base_address\": "
         << domain.logical_base_address << "," << endl
-        << "        \"size\": " << domain.data_size << "," << endl
-        << "        \"working_counter\": " << wc_sum << "," << endl
-        << "        \"expected_working_counter\": "
+        << "          \"size\": " << domain.data_size << "," << endl
+        << "          \"working_counter\": " << wc_sum << "," << endl
+        << "          \"expected_working_counter\": "
         << domain.expected_working_counter << "," << endl
-        << "        \"working_counter_per_device\": [";
+        << "          \"working_counter_per_device\": [";
     for (dev_idx = EC_DEVICE_MAIN; dev_idx < master.num_devices; dev_idx++) {
         cout << domain.working_counter[dev_idx];
         if (dev_idx + 1 < master.num_devices) {
@@ -286,7 +286,7 @@ void CommandDomains::showDomainJson(
         }
     }
     cout << "]" << endl
-        << "      }";
+        << "        }";
 }
 
 /****************************************************************************/

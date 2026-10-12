@@ -143,6 +143,14 @@ class Command
         static std::string alStateBaseString(uint8_t);
         static std::string jsonEscape(const std::string &);
 
+        /** Version of the JSON output format.
+         *
+         * Increment on incompatible changes.
+         */
+        enum {JsonFormatVersion = 1};
+        static void jsonBegin(const std::string &);
+        static void jsonEnd();
+
     private:
         std::string name;
         std::string briefDesc;

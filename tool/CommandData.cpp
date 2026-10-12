@@ -84,7 +84,7 @@ void CommandData::execute(const StringVector &args)
     masterIndices = getMasterIndices();
 
     if (getJson()) {
-        cout << "[" << endl;
+        jsonBegin("main_devices");
     }
 
     MasterIndexList::const_iterator mi;
@@ -105,9 +105,9 @@ void CommandData::execute(const StringVector &args)
             }
             firstMaster = false;
 
-            cout << "  {" << endl
-                << "    \"master\": " << m.getIndex() << "," << endl
-                << "    \"domains\": [" << endl;
+            cout << "    {" << endl
+                << "      \"main_device\": " << m.getIndex() << "," << endl
+                << "      \"domains\": [" << endl;
 
             for (di = domains.begin(); di != domains.end(); di++) {
                 if (!firstDomain) {
@@ -118,8 +118,8 @@ void CommandData::execute(const StringVector &args)
             }
 
             cout << endl
-                << "    ]" << endl
-                << "  }";
+                << "      ]" << endl
+                << "    }";
             continue;
         }
 
@@ -129,7 +129,7 @@ void CommandData::execute(const StringVector &args)
     }
 
     if (getJson()) {
-        cout << endl << "]" << endl;
+        jsonEnd();
     }
 }
 
@@ -176,14 +176,14 @@ void CommandData::outputDomainDataJson(
     unsigned int i, j, dataOffset;
     bool firstFmmu = true;
 
-    cout << "      {" << endl
-        << "        \"index\": " << domain.index << "," << endl
-        << "        \"size\": " << domain.data_size << "," << endl
-        << "        \"fmmus\": [";
+    cout << "        {" << endl
+        << "          \"index\": " << domain.index << "," << endl
+        << "          \"size\": " << domain.data_size << "," << endl
+        << "          \"fmmus\": [";
 
     if (!domain.data_size) {
         cout << "]" << endl
-            << "      }";
+            << "        }";
         return;
     }
 
@@ -212,20 +212,20 @@ void CommandData::outputDomainDataJson(
         }
         firstFmmu = false;
 
-        cout << endl << "          {" << endl
-            << "            \"slave_config_alias\": "
+        cout << endl << "            {" << endl
+            << "              \"sub_device_config_alias\": "
             << fmmu.slave_config_alias << "," << endl
-            << "            \"slave_config_position\": "
+            << "              \"sub_device_config_position\": "
             << fmmu.slave_config_position << "," << endl
-            << "            \"sync_manager\": "
+            << "              \"sync_manager\": "
             << (unsigned int) fmmu.sync_index << "," << endl
-            << "            \"direction\": \""
+            << "              \"direction\": \""
             << (fmmu.dir == EC_DIR_INPUT ? "input" : "output") << "\","
             << endl
-            << "            \"logical_address\": "
+            << "              \"logical_address\": "
             << fmmu.logical_address << "," << endl
-            << "            \"size\": " << fmmu.data_size << "," << endl
-            << "            \"data\": [";
+            << "              \"size\": " << fmmu.data_size << "," << endl
+            << "              \"data\": [";
 
         for (j = 0; j < fmmu.data_size; j++) {
             if (j) {
@@ -235,16 +235,16 @@ void CommandData::outputDomainDataJson(
         }
 
         cout << "]" << endl
-            << "          }";
+            << "            }";
     }
 
     delete [] processData;
 
     if (!firstFmmu) {
-        cout << endl << "        ";
+        cout << endl << "          ";
     }
     cout << "]" << endl
-        << "      }";
+        << "        }";
 }
 
 /****************************************************************************/

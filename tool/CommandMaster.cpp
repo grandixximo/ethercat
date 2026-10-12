@@ -83,7 +83,7 @@ void CommandMaster::execute(const StringVector &args)
     masterIndices = getMasterIndices();
 
     if (getJson()) {
-        cout << "[" << endl;
+        jsonBegin("main_devices");
     }
 
     MasterIndexList::const_iterator mi;
@@ -104,7 +104,7 @@ void CommandMaster::execute(const StringVector &args)
     }
 
     if (getJson()) {
-        cout << endl << "]" << endl;
+        jsonEnd();
     }
 }
 
@@ -380,9 +380,9 @@ void CommandMaster::showMasterJson(
     unsigned int dev_idx, j;
     unsigned int lost;
 
-    cout << "  {" << endl
-        << "    \"master\": " << dec << m.getIndex() << "," << endl
-        << "    \"phase\": \"";
+    cout << "    {" << endl
+        << "      \"main_device\": " << dec << m.getIndex() << "," << endl
+        << "      \"phase\": \"";
     switch (data.phase) {
         case 0:  cout << "waiting"; break;
         case 1:  cout << "idle"; break;
@@ -390,10 +390,10 @@ void CommandMaster::showMasterJson(
         default: cout << "unknown";
     }
     cout << "\"," << endl
-        << "    \"active\": " << (data.active ? "true" : "false") << ","
+        << "      \"active\": " << (data.active ? "true" : "false") << ","
         << endl
-        << "    \"slave_count\": " << data.slave_count << "," << endl
-        << "    \"sii_caching\": [";
+        << "      \"sub_device_count\": " << data.slave_count << "," << endl
+        << "      \"sii_caching\": [";
 
     {
         bool first = true;
@@ -415,14 +415,14 @@ void CommandMaster::showMasterJson(
         }
     }
     cout << "]," << endl
-        << "    \"devices\": [" << endl;
+        << "      \"devices\": [" << endl;
 
     for (dev_idx = EC_DEVICE_MAIN; dev_idx < data.num_devices; dev_idx++) {
-        cout << "      {" << endl
-            << "        \"role\": \""
+        cout << "        {" << endl
+            << "          \"role\": \""
             << (dev_idx == EC_DEVICE_MAIN ? "main" : "backup") << "\","
             << endl
-            << "        \"address\": \""
+            << "          \"address\": \""
             << hex << setfill('0')
             << setw(2) << (unsigned int) data.devices[dev_idx].address[0]
             << ":"
@@ -436,34 +436,34 @@ void CommandMaster::showMasterJson(
             << ":"
             << setw(2) << (unsigned int) data.devices[dev_idx].address[5]
             << dec << setfill(' ') << "\"," << endl
-            << "        \"attached\": "
+            << "          \"attached\": "
             << (data.devices[dev_idx].attached ? "true" : "false")
             << "," << endl
-            << "        \"link\": "
+            << "          \"link\": "
             << (data.devices[dev_idx].link_state ? "true" : "false")
             << "," << endl
-            << "        \"tx_frames\": " << data.devices[dev_idx].tx_count
+            << "          \"tx_frames\": " << data.devices[dev_idx].tx_count
             << "," << endl
-            << "        \"tx_bytes\": " << data.devices[dev_idx].tx_bytes
+            << "          \"tx_bytes\": " << data.devices[dev_idx].tx_bytes
             << "," << endl
-            << "        \"rx_frames\": " << data.devices[dev_idx].rx_count
+            << "          \"rx_frames\": " << data.devices[dev_idx].rx_count
             << "," << endl
-            << "        \"rx_bytes\": " << data.devices[dev_idx].rx_bytes
+            << "          \"rx_bytes\": " << data.devices[dev_idx].rx_bytes
             << "," << endl
-            << "        \"tx_errors\": " << data.devices[dev_idx].tx_errors
+            << "          \"tx_errors\": " << data.devices[dev_idx].tx_errors
             << "," << endl
-            << "        ";
+            << "          ";
         jsonRates("tx_frame_rate", data.devices[dev_idx].tx_frame_rates,
                 1000.0);
-        cout << "," << endl << "        ";
+        cout << "," << endl << "          ";
         jsonRates("tx_rate", data.devices[dev_idx].tx_byte_rates, 1.0);
-        cout << "," << endl << "        ";
+        cout << "," << endl << "          ";
         jsonRates("rx_frame_rate", data.devices[dev_idx].rx_frame_rates,
                 1000.0);
-        cout << "," << endl << "        ";
+        cout << "," << endl << "          ";
         jsonRates("rx_rate", data.devices[dev_idx].rx_byte_rates, 1.0);
         cout << endl
-            << "      }";
+            << "        }";
         if (dev_idx + 1 < data.num_devices) {
             cout << ",";
         }
@@ -476,25 +476,25 @@ void CommandMaster::showMasterJson(
         lost = 0;
     }
 
-    cout << "    ]," << endl
-        << "    \"common\": {" << endl
-        << "      \"tx_frames\": " << data.tx_count << "," << endl
-        << "      \"tx_bytes\": " << data.tx_bytes << "," << endl
-        << "      \"rx_frames\": " << data.rx_count << "," << endl
-        << "      \"rx_bytes\": " << data.rx_bytes << "," << endl
-        << "      \"lost_frames\": " << lost << "," << endl
-        << "      ";
+    cout << "      ]," << endl
+        << "      \"common\": {" << endl
+        << "        \"tx_frames\": " << data.tx_count << "," << endl
+        << "        \"tx_bytes\": " << data.tx_bytes << "," << endl
+        << "        \"rx_frames\": " << data.rx_count << "," << endl
+        << "        \"rx_bytes\": " << data.rx_bytes << "," << endl
+        << "        \"lost_frames\": " << lost << "," << endl
+        << "        ";
     jsonRates("tx_frame_rate", data.tx_frame_rates, 1000.0);
-    cout << "," << endl << "      ";
+    cout << "," << endl << "        ";
     jsonRates("tx_rate", data.tx_byte_rates, 1.0);
-    cout << "," << endl << "      ";
+    cout << "," << endl << "        ";
     jsonRates("rx_frame_rate", data.rx_frame_rates, 1000.0);
-    cout << "," << endl << "      ";
+    cout << "," << endl << "        ";
     jsonRates("rx_rate", data.rx_byte_rates, 1.0);
-    cout << "," << endl << "      ";
+    cout << "," << endl << "        ";
     jsonRates("loss_rate", data.loss_rates, 1000.0);
     cout << "," << endl
-        << "      \"frame_loss_percent\": {";
+        << "        \"frame_loss_percent\": {";
     {
         static const char *intervals[EC_RATE_COUNT] = {"1s", "10s", "60s"};
         for (j = 0; j < EC_RATE_COUNT; j++) {
@@ -510,23 +510,23 @@ void CommandMaster::showMasterJson(
         }
     }
     cout << "}" << endl
-        << "    }," << endl
-        << "    \"distributed_clocks\": {" << endl
-        << "      \"reference_clock\": ";
+        << "      }," << endl
+        << "      \"distributed_clocks\": {" << endl
+        << "        \"reference_clock\": ";
     if (data.ref_clock != 0xffff) {
         cout << dec << data.ref_clock;
     } else {
         cout << "null";
     }
     cout << "," << endl
-        << "      \"dc_ref_time\": " << setprecision(9) << fixed
+        << "        \"dc_ref_time\": " << setprecision(9) << fixed
         << (data.dc_ref_time / 1e9) << "," << endl
-        << "      \"dc_ref_time_ns\": \"" << data.dc_ref_time << "\","
+        << "        \"dc_ref_time_ns\": \"" << data.dc_ref_time << "\","
         << endl
-        << "      \"app_time\": " << setprecision(9) << fixed
+        << "        \"app_time\": " << setprecision(9) << fixed
         << (data.app_time / 1e9) << "," << endl
-        << "      \"app_time_ns\": \"" << data.app_time << "\"," << endl
-        << "      \"app_time_iso\": \"";
+        << "        \"app_time_ns\": \"" << data.app_time << "\"," << endl
+        << "        \"app_time_iso\": \"";
 
     {
         time_t epoch;
@@ -542,8 +542,8 @@ void CommandMaster::showMasterJson(
     }
 
     cout << "\"" << endl
-        << "    }" << endl
-        << "  }";
+        << "      }" << endl
+        << "    }";
 }
 
 /****************************************************************************/

@@ -26,11 +26,13 @@
 #include "NumberListParser.h"
 #include "MasterDevice.h"
 
+#include <iostream>
 #include <iomanip>
 #include <map>
 
 using std::string;
 using std::stringstream;
+using std::cout;
 using std::endl;
 using std::map;
 
@@ -567,6 +569,32 @@ string Command::jsonEscape(const string &in)
     }
 
     return out.str();
+}
+
+/****************************************************************************/
+
+/** Outputs the opening of a JSON document.
+ *
+ * The document is an object containing the format version, the EtherCAT
+ * master version and a list with the given key. The list elements have to
+ * be indented by four spaces.
+ */
+void Command::jsonBegin(const string &listKey)
+{
+    cout << "{" << endl
+        << "  \"json_version\": " << JsonFormatVersion << "," << endl
+        << "  \"ethercat_main_device_version\": \""
+        << jsonEscape(EC_MASTER_VERSION) << "\"," << endl
+        << "  \"" << listKey << "\": [" << endl;
+}
+
+/****************************************************************************/
+
+/** Outputs the closing of a JSON document opened with jsonBegin().
+ */
+void Command::jsonEnd()
+{
+    cout << endl << "  ]" << endl << "}" << endl;
 }
 
 /****************************************************************************/
